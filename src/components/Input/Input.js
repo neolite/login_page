@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 const Input = styled.input`
@@ -16,6 +15,13 @@ const Input = styled.input`
   transition: border-color 0.2s;
   padding: 0 10px 2px;
   background: #fff;
+  :disabled {
+    background: #f8f8f8;
+    color: #000;
+    -webkit-text-fill-color: #000;
+    -webkit-opacity: 1;
+    opacity: 1;
+  }
 `;
 
 export default Input;

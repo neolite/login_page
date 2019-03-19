@@ -4,7 +4,7 @@ const Link = styled.span`
   color: #362d90;
   cursor: pointer;
   position: absolute;
-  bottom: 7px;
+  bottom: 9px;
   font-size: 14px;
   right: 10px;
 

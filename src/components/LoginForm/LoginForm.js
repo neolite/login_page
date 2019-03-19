@@ -1,9 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import styled from "styled-components";
+
+import { UserContext } from "../../context/user";
+import { loginUser } from "../../services/login";
+import { remindPassword } from "../../services/remindPassword";
 
 import BigButton from "../Buttons/BigButton";
 import Input from "../Input/Input";
 import Link from "../Link/Link";
+import { SET_USER, SET_USER_ERROR } from "../../constants";
 
 const FormDiv = styled.div`
   position: relative;
@@ -62,22 +67,51 @@ const ErrorSpan = styled.span`
 
 const LoginForm = () => {
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [disablePassword, setDisablePassword] = useState(false);
 
-  const loginUser = evt => {
+  const { dispatch } = useContext(UserContext);
+
+  const handleLogin = async evt => {
     evt.preventDefault();
-    console.log(login, password);
+    setLoading(true);
+    const response = await loginUser(login, password);
+    setLoading(false);
+    if (response.error) {
+      dispatch({ type: SET_USER_ERROR, payload: response.error });
+      setError(true);
+      setErrorMessage("Неправильный логин или пароль");
+    } else {
+      dispatch({ type: SET_USER, payload: response.data.user });
+    }
   };
 
-  const remindPassword = useCallback(() => {
+  const handleRemindPassword = useCallback(() => {
+    if (disablePassword) {
+      setDisablePassword(false);
+      return;
+    }
     if (login.length < 3) {
       setError(true);
       setErrorMessage("Введите эл. почту или телефон");
       return;
+    } else {
+      setLoading(true);
+      const result = remindPassword(login);
+      setLoading(false);
+      if (result.error) {
+        setError(true);
+        setErrorMessage(
+          "Пользователя с такой почтой или телефоном не существует"
+        );
+      } else {
+        setDisablePassword(true);
+      }
     }
-  }, [login]);
+  }, [login, disablePassword]);
 
   return (
     <FormDiv>
@@ -91,18 +125,23 @@ const LoginForm = () => {
           <FormRow>
             <FormLabel>Пароль</FormLabel>
             <Input
-              type="password"
-              value={password}
+              type={disablePassword ? "text" : "password"}
+              value={disablePassword ? "Ссылка отправлена на почту" : password}
+              disabled={disablePassword}
               onChange={evt => setPassword(evt.target.value)}
             />
-            <Link onClick={remindPassword}>Напомнить</Link>
+            <Link onClick={handleRemindPassword}>
+              {disablePassword ? "Ввести пароль" : "Напомнить"}
+            </Link>
           </FormRow>
         </FormTopBlock>
         <FormBottomBlock>
           <BigButton
             blue
-            disabled={!(login.length || password.length)}
-            onClick={loginUser}
+            disabled={
+              !(login.length && password.length) || disablePassword || loading
+            }
+            onClick={handleLogin}
           >
             Войти на площадку
           </BigButton>

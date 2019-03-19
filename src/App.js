@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import "./App.css";
-import LoginForm from "./components/LoginForm/LoginForm.js";
+import { UserProvider } from "./context/user";
+import LoginPage from "./components/LoginPage/LoginPage";
 
 class App extends Component {
   render() {
     return (
       <div className="container">
-        <LoginForm />
+        <UserProvider>
+          <LoginPage />
+        </UserProvider>
       </div>
     );
   }
