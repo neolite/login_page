@@ -3,7 +3,7 @@ import { SET_USER } from "../constants";
 
 const initialState = { user: null };
 
-export const UserContext = new createContext(initialState);
+export const UserContext = createContext(initialState);
 
 let reducer = (state, action) => {
   switch (action.type) {

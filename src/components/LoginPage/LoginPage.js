@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
-import { UserContext } from "../../context/user";
 import get from "lodash/get";
+
+import { UserContext } from "../../context/user";
 import LoginForm from "../LoginForm/LoginForm";
 import UserProfile from "../UserProfile/UserProfile";
 
